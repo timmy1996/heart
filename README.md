@@ -34,6 +34,7 @@
 ## Precision–Recall Curve (Test)
 Chosen operating point marked at **T = 0.225**.  
 ![](assets/fig_prcurve_test.png)
+<img src="assets/fig_prcurve_test.png" width="420">
 
 ## ROC Curve (Test)
 Operating point shown; **ROC AUC = 0.9275**.  
