@@ -33,12 +33,11 @@
 
 ## Precision–Recall Curve (Test)
 Chosen operating point marked at **T = 0.225**.  
-![](assets/fig_prcurve_test.png)
-<img src="assets/fig_prcurve_test.png" width="420">
+<img src="assets/fig_prcurve_test.png" width="620">
 
 ## ROC Curve (Test)
 Operating point shown; **ROC AUC = 0.9275**.  
-![](assets/fig_roc_test.png)
+<img src="assets/fig_roc_test" width="620">
 
 ## Top Features (Permutation Importance, Validation; scored by F2)
 Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **FastingBS / ExerciseAngina / Oldpeak**.  
