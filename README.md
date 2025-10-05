@@ -33,11 +33,11 @@
 
 ## Precision–Recall Curve (Test)
 Chosen operating point marked at **T = 0.225**.  
-![](assets/fig_prcurve_test.png)
+<img src="assets/fig_prcurve_test.png" width="620">
 
 ## ROC Curve (Test)
 Operating point shown; **ROC AUC = 0.9275**.  
-![](assets/fig_roc_test.png)
+<img src="assets/fig_roc_test.png" width="620">
 
 ## Top Features (Permutation Importance, Validation; scored by F2)
 Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **FastingBS / ExerciseAngina / Oldpeak**.  
@@ -45,7 +45,7 @@ Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Fasti
 
 ---
 
-## Method (brief)
+## Method
 - **Preprocessing:** Median imputation; One-Hot Encoding for categoricals; targeted transforms (e.g., binning Oldpeak); polynomial features in select variants.
 - **Model selection:** Multiple feature sets and model families (Logistic Regression, Random Forest) compared with **Stratified** CV on Train; candidates ranked by **validation F2**.
 - **Threshold tuning:** Decision threshold tuned for **F2** on **Train+Validation**; threshold **locked** before Test.
