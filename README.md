@@ -37,7 +37,7 @@ Chosen operating point marked at **T = 0.225**.
 
 ## ROC Curve (Test)
 Operating point shown; **ROC AUC = 0.9275**.  
-<img src="assets/fig_roc_test" width="620">
+<img src="assets/fig_roc_test.png" width="620">
 
 ## Top Features (Permutation Importance, Validation; scored by F2)
 Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **FastingBS / ExerciseAngina / Oldpeak**.  
