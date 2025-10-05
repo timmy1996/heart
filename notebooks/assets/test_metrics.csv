@@ -1,0 +1,2 @@
+threshold,recall_pos,precision_pos,accuracy,F2,roc_auc,pr_auc,specificity,TP,FP,TN,FN
+0.225,0.9804,0.7299,0.788,0.9174,0.9275,0.9377,0.5488,100,37,45,2
