@@ -45,7 +45,7 @@ Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Fasti
 
 ---
 
-## Method (brief)
+## Method
 - **Preprocessing:** Median imputation; One-Hot Encoding for categoricals; targeted transforms (e.g., binning Oldpeak); polynomial features in select variants.
 - **Model selection:** Multiple feature sets and model families (Logistic Regression, Random Forest) compared with **Stratified** CV on Train; candidates ranked by **validation F2**.
 - **Threshold tuning:** Decision threshold tuned for **F2** on **Train+Validation**; threshold **locked** before Test.
