@@ -59,7 +59,7 @@ Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Fasti
   - `fig_prcurve_test.png`
   - `fig_roc_test.png`
   - `fig_features_val.png`
-- `requirements.txt` — library versions / seeds
+- environment.yml — libraries & versions
 
 ---
 
