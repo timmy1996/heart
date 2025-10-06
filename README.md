@@ -40,7 +40,7 @@ Operating point shown; **ROC AUC = 0.9275**.
 <img src="assets/fig_roc_test.png" width="620">
 
 ## Top Features (Permutation Importance, Validation; scored by F2)
-Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Oldpeak / Age / FastingBS / **.  
+Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Oldpeak / Age / FastingBS**.  
 ![](assets/fig_features_val.png)
 
 ---
