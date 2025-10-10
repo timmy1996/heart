@@ -275,21 +275,21 @@ def loess_diagnostic_grid2(
         X = df[[x]].values.astype(float)
         y_vec = df[target].values
 
-        # Scale predictor for stability
+        # scale predictor for stability
         scaler = StandardScaler()
         Xs = scaler.fit_transform(X)
 
-        # LOWESS on raw scale
+        
         lo_out = lowess(y_vec, df[x], frac=frac, return_sorted=True)
         x_lo, y_lo = lo_out[:, 0], lo_out[:, 1]
 
-        # Logistic fit on scaled x
+        
         log_reg = LogisticRegression(C=logistic_C, solver="lbfgs")
         log_reg.fit(Xs, y_vec)
         x_grid = np.linspace(df[x].min(), df[x].max(), 300)[:, None]
         y_hat = log_reg.predict_proba(scaler.transform(x_grid))[:, 1]
 
-        # Plot
+       
         sns.scatterplot(x=df[x], y=y_vec, alpha=scatter_alpha, s=scatter_size, ax=ax)
         ax.plot(x_lo, y_lo, lw=2, label="LOWESS")
         ax.plot(x_grid.ravel(), y_hat, lw=2, linestyle="--", label="Logit (linear)")
@@ -299,7 +299,7 @@ def loess_diagnostic_grid2(
         ax.set_title(f"Non-linearity check: {x}")
         ax.legend()
 
-    # Hide any empty axes (if n is odd)
+    
     for j in range(n, n_rows * n_cols):
         r, c = divmod(j, n_cols)
         fig.delaxes(axes[r][c])
@@ -347,7 +347,7 @@ class CholesterolCleaner(BaseEstimator, TransformerMixin):
         check_is_fitted(self, "feature_names_in_")
         return self.feature_names_in_
 
-    # --- helpers ---
+    
     def _to_df(self, X):
         """Ensure a DataFrame, preserving names when available."""
         if isinstance(X, pd.DataFrame):
@@ -515,15 +515,15 @@ def loess_diagnostic_grid(
     numeric_vars,
     target,
     *,
-    frac=0.25,                 # LOWESS span
-    logistic_C=1.0,            # inverse regularization strength
+    frac=0.25,                
+    logistic_C=1.0,            
     n_cols=2,
     scatter_alpha=0.15,
     scatter_size=12,
     figsize_per_plot=(6, 4),
     cv_splits=5,
     rng=0,
-    handle_zeros_for=("Cholesterol",),  # optionally ignore zeros in these vars
+    handle_zeros_for=("Cholesterol",),  
 ):
     """
     LOWESS-vs-logistic diagnostic for multiple numeric predictors, with a
@@ -549,7 +549,7 @@ def loess_diagnostic_grid(
     for idx, var in enumerate(numeric_vars):
         ax = axes[idx // n_cols, idx % n_cols]
 
-        # Subset & basic cleaning
+       
         x = df[var].values.astype(float)
         mask = np.isfinite(x) & np.isfinite(y)
         if var in handle_zeros_for:
@@ -567,12 +567,12 @@ def loess_diagnostic_grid(
             })
             continue
 
-        # Grid for smooth curves
+       
         xgrid = np.linspace(np.nanpercentile(x_use, 1), np.nanpercentile(x_use, 99), 200)
 
-        # LOWESS on raw 0/1 y vs x (binomial smoothing proxy)
+        
         lo = lowess(endog=y_use, exog=x_use, frac=frac, return_sorted=True)
-        # Interpolate LOWESS to xgrid for comparison
+        
         lo_grid = np.interp(xgrid, lo[:,0], lo[:,1])
 
         # Logistic (degree=1)
@@ -583,7 +583,7 @@ def loess_diagnostic_grid(
         # Nonlinearity score: RMSE between LOWESS and logistic curves
         rmse = float(np.sqrt(np.mean((lo_grid - p_deg1_grid)**2)))
 
-        # CV AUC (degree 1 vs 2) — simple check
+        # change in AUC (degree 1 vs 2)
         skf = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
         auc1, auc2 = [], []
         for tr, te in skf.split(x_use.reshape(-1,1), y_use):
@@ -607,11 +607,9 @@ def loess_diagnostic_grid(
         auc2 = float(np.mean(auc2))
         auc_gain = float(auc2 - auc1)
 
-        # Simple flag: either clear curvature (RMSE) or useful AUC gain
+        #either clear curvature (RMSE) or useful AUC gain
         flagged = (rmse >= 0.03) or (auc_gain >= 0.01)
 
-        # ---- Plotting ----
-        # Jittered scatter to show density without a rug
         xj = x_use + rng.normal(0, 0.01 * np.std(x_use), size=x_use.size)
         yj = y_use + rng.normal(0, 0.03, size=y_use.size)
         ax.scatter(xj, yj, s=scatter_size, alpha=scatter_alpha, edgecolor="none")
@@ -620,7 +618,7 @@ def loess_diagnostic_grid(
         ax.plot(xgrid, lo_grid, linewidth=2, label="LOWESS p̂(y=1|x)")
         ax.plot(xgrid, p_deg1_grid, linewidth=1.5, linestyle="--", label="Logistic (linear)")
 
-        ax.set_title(f"{var}  •  RMSE={rmse:.3f}  •  ΔAUC={auc_gain:.3f}")
+        ax.set_title(f"{var}  •  RMSE={rmse:.3f}  •  Change in AUC={auc_gain:.3f}")
         ax.set_ylim(-0.05, 1.05)
         ax.set_xlabel(var)
         ax.set_ylabel("Probability of HeartDisease")
@@ -636,7 +634,6 @@ def loess_diagnostic_grid(
             "n_eff": n_eff
         })
 
-    # Hide any empty subplots
     total_axes = n_rows * n_cols
     for k in range(n, total_axes):
         axes[k // n_cols, k % n_cols].axis("off")
@@ -653,7 +650,7 @@ def barplots_cat_univariate(
     n_cols=2,
     decimals=0,
     show_counts=True,
-    order="desc",           # "desc" | "asc" | None (keep df order)
+    order="desc",           
     dropna=False,
     figsize_per_plot=(6, 4),
 ):
@@ -695,7 +692,6 @@ def barplots_cat_univariate(
     for i, var in enumerate(categorical_vars):
         ax = axes[i]
         dsub = summary[summary["variable"] == var].copy()
-        # keep order as laid out above
         dsub["category"] = dsub["category"].astype(str)
         order_cats = dsub["category"].tolist()
 
@@ -721,7 +717,6 @@ def barplots_cat_univariate(
                 fontsize=9
             )
 
-    # hide any extra axes
     for j in range(i + 1, len(axes)):
         axes[j].axis("off")
 
@@ -750,7 +745,6 @@ def barplots_by_category_labeled(df, categorical_vars, target, n_cols=2, decimal
         counts['Proportion'] = counts.groupby(cat_var)['Count'].transform(lambda x: x / x.sum())
         counts['Percent'] = counts['Proportion'] * 100
 
-        # Keep natural order by category frequency
         cat_order = (df[cat_var].value_counts().index.astype(str).tolist())
         counts[cat_var] = counts[cat_var].astype(str)
 
@@ -767,7 +761,7 @@ def barplots_by_category_labeled(df, categorical_vars, target, n_cols=2, decimal
         sns.despine(ax=ax)
 
         # Add % labels to each bar
-        # Note: patches are ordered by hue group within each x; we map them back to the counts rows.
+        #patches are ordered by hue group within each x; we map them back to the counts rows.
         patch_idx = 0
         for _, row in counts.iterrows():
             if patch_idx >= len(ax.patches):
@@ -785,7 +779,6 @@ def barplots_by_category_labeled(df, categorical_vars, target, n_cols=2, decimal
 
         ax.legend(title=target, fontsize=9, frameon=False)
 
-    # hide any empty axes
     for k in range(i + 1, len(axes)):
         axes[k].axis("off")
 
@@ -832,9 +825,8 @@ class ToDataFrame(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        # Safe to convert here; clone only inspects __init__ params
+        
         cols = list(self.columns)
-        # Try to preserve index if X is already a DataFrame; else None
         idx = getattr(X, "index", None)
         return pd.DataFrame(X, columns=cols, index=idx)
 
@@ -847,7 +839,6 @@ def plot_perm_importance_box(result, X_cols, title="Permutation Importances", xl
     sorted_idx = result.importances_mean.argsort()
     cols_sorted = np.array(X_cols)[sorted_idx]
 
-    # build (n_repeats x n_features) -> DataFrame for boxplot
     importances_df = pd.DataFrame(result.importances[sorted_idx].T, columns=cols_sorted)
 
     ax = importances_df.plot.box(vert=False, whis=10, figsize=(8, 6))
@@ -856,8 +847,9 @@ def plot_perm_importance_box(result, X_cols, title="Permutation Importances", xl
     ax.set_xlabel(xlabel)
     plt.tight_layout()
     plt.show()
+
 def summarize_tuned(name, tuned_clf, X, y):
-    y_pred = tuned_clf.predict(X)  # uses tuned threshold internally
+    y_pred = tuned_clf.predict(X)  
     return {
         "model": name,
         "threshold": round(float(tuned_clf.best_threshold_), 3),
@@ -916,14 +908,13 @@ def plot_confusion_matrices_grid(
     if n_models == 0:
         raise ValueError("models_tuned is empty.")
 
-    # Precompute confusion matrices
+    # confusion matrices
     cms_counts, cms_norm = [], []
     for _, clf in models_tuned:
         y_pred = clf.predict(X)
         cms_counts.append(confusion_matrix(y, y_pred, labels=labels))
         cms_norm.append(confusion_matrix(y, y_pred, labels=labels, normalize="true"))
 
-    # Use constrained layout (plays nicer than tight_layout for image axes)
     fig, axes = plt.subplots(
         nrows=2, ncols=n_models, figsize=figsize, constrained_layout=True,
     )
@@ -936,19 +927,19 @@ def plot_confusion_matrices_grid(
         axes = axes.reshape(2, 1)
 
     for i, (name, _) in enumerate(models_tuned):
-        # Counts (top)
+        # Counts 
         disp_c = ConfusionMatrixDisplay(confusion_matrix=cms_counts[i], display_labels=labels)
         disp_c.plot(ax=axes[0, i], values_format="d", cmap=cmap, colorbar=False)
         axes[0, i].set_title(f"{name}\n{title_counts_suffix}", fontsize=fontsize)
         axes[0, i].set_xlabel(""); axes[0, i].set_ylabel("")
 
-        # Normalized (bottom)
+        # Normalized
         disp_n = ConfusionMatrixDisplay(confusion_matrix=cms_norm[i], display_labels=labels)
         disp_n.plot(ax=axes[1, i], values_format=".2f", cmap=cmap, colorbar=False)
         axes[1, i].set_title(f"{name}\n{title_norm_suffix}", fontsize=fontsize)
         axes[1, i].set_xlabel(""); axes[1, i].set_ylabel("")
 
-    # Minimal outer labels
+    
     axes[0, 0].set_ylabel("Actual", fontsize=fontsize)
     axes[1, 0].set_ylabel("Actual", fontsize=fontsize)
     for ax in axes[1, :]:
@@ -958,7 +949,6 @@ def plot_confusion_matrices_grid(
         plt.show()
         return None
     else:
-        # prevent Jupyter from auto-displaying this figure again
         plt.close(fig)
         return fig
 
@@ -976,20 +966,20 @@ def plot_confusion_matrices_grid(
     fontsize=9,
     vspace=0.35,
     hspace=0.15,
-    show=True,          # <- control display vs return
+    show=True,          
 ):
     n_models = len(models_tuned)
     if n_models == 0:
         raise ValueError("models_tuned is empty.")
 
-    # Precompute confusion matrices
+    # confusion matrices
     cms_counts, cms_norm = [], []
     for _, clf in models_tuned:
         y_pred = clf.predict(X)
         cms_counts.append(confusion_matrix(y, y_pred, labels=labels))
         cms_norm.append(confusion_matrix(y, y_pred, labels=labels, normalize="true"))
 
-    # Use constrained layout (plays nicer than tight_layout for image axes)
+    
     fig, axes = plt.subplots(
         nrows=2, ncols=n_models, figsize=figsize, constrained_layout=True,
     )
@@ -1014,7 +1004,7 @@ def plot_confusion_matrices_grid(
         axes[1, i].set_title(f"{name}\n{title_norm_suffix}", fontsize=fontsize)
         axes[1, i].set_xlabel(""); axes[1, i].set_ylabel("")
 
-    # Minimal outer labels
+   
     axes[0, 0].set_ylabel("Actual", fontsize=fontsize)
     axes[1, 0].set_ylabel("Actual", fontsize=fontsize)
     for ax in axes[1, :]:
@@ -1024,7 +1014,7 @@ def plot_confusion_matrices_grid(
         plt.show()
         return None
     else:
-        # prevent Jupyter from auto-displaying this figure again
+        
         plt.close(fig)
         return fig
 class ThresholdWrapper:
