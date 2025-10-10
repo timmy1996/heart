@@ -8,7 +8,12 @@
 - **Final model:** **Random Forest — oldpeak_binned_poly** (champion)  
 - **Operating point:** tuned decision threshold **T = 0.225** (optimized for **F2** on Train+Val, then locked before Test)
 - **Impact:** At this threshold we catch **98.0%** of true cases with **73.0%** precision.
-
+---
+## Method
+- **Preprocessing:** Median imputation; One-Hot Encoding for categoricals; targeted transforms (e.g., binning Oldpeak); polynomial features in select variants.
+- **Model selection:** Multiple feature sets and model families (Logistic Regression, Random Forest) compared with **Stratified** CV on Train; candidates ranked by **validation F2**.
+- **Threshold tuning:** Decision threshold tuned for **F2** on **Train+Validation**; threshold **locked** before Test.
+- **Final evaluation:** Single pass on Test at the locked threshold. Reported both **operating-point metrics** (Recall, F2, Precision, Accuracy) and **threshold-free** metrics (PR AUC, ROC AUC).
 ## Final Test Metrics (locked threshold)
 | Metric | Value |
 |---|---:|
@@ -40,16 +45,10 @@ Operating point shown; **ROC AUC = 0.9275**.
 <img src="assets/fig_roc_test.png" width="620">
 
 ## Top Features (Permutation Importance, Validation; scored by F2)
-Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **FastingBS / ExerciseAngina / Oldpeak**.  
+Dominant contributors: **ST_Slope** (strongest), **ChestPainType**, then **Oldpeak / Age / FastingBS**.  
 ![](assets/fig_features_val.png)
 
 ---
-
-## Method
-- **Preprocessing:** Median imputation; One-Hot Encoding for categoricals; targeted transforms (e.g., binning Oldpeak); polynomial features in select variants.
-- **Model selection:** Multiple feature sets and model families (Logistic Regression, Random Forest) compared with **Stratified** CV on Train; candidates ranked by **validation F2**.
-- **Threshold tuning:** Decision threshold tuned for **F2** on **Train+Validation**; threshold **locked** before Test.
-- **Final evaluation:** Single pass on Test at the locked threshold. Reported both **operating-point metrics** (Recall, F2, Precision, Accuracy) and **threshold-free** metrics (PR AUC, ROC AUC).
 
 ## Reproducibility
 - `notebooks/` — EDA, modeling, threshold tuning, report figures  
