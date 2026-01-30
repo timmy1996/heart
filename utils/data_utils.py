@@ -696,7 +696,7 @@ def barplots_cat_univariate(
         order_cats = dsub["category"].tolist()
 
         sns.barplot(data=dsub, x="category", y="percent", order=order_cats, ax=ax)
-        ax.set_title(f"{var.replace('_',' ')} — % by category")
+        ax.set_title(f"{var.replace('_',' ')} - % by category")
         ax.set_xlabel(var.replace("_", " "))
         ax.set_ylabel("Percent")
         ax.set_ylim(0, max(5, dsub["percent"].max() * 1.15))
